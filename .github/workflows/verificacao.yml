@@ -1,0 +1,24 @@
+# Confere a sintaxe de todos os arquivos Python a cada push
+# (ignora bibliotecas copiadas para dentro do repositório, como Lib/ e venv/).
+name: Verificação
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  python:
+    name: Sintaxe do Python
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+      - name: Compilar todos os .py
+        run: |
+          python --version
+          python -m compileall -q -x '(^|/)(Lib|lib|venv|\.venv|env|site-packages|node_modules)/' .
+          echo "$(find . -name '*.py' -not -path '*/Lib/*' -not -path '*/venv/*' -not -path '*/.venv/*' | wc -l) arquivos Python sem erro de sintaxe"
